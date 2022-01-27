@@ -1,0 +1,52 @@
+
+
+vi docker-compose.yml
+
+version: "3.9"
+services:
+  MySQL:
+    image: mysql:latest
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    ports:
+      - "3306:3306"
+    volumes:
+      - /home/idenis/mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 3151020
+      MYSQL_USER: wpuser
+      MYSQL_PASSWORD: 123qwe
+      MYSQL_DATABASE: wpdb
+
+  NGINX:
+    image: nginx:latest
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - /home/idenis/nginx:/usr/share/nginx/html
+      
+docker-compose up -d
+docker ps ; docker images
+ip -br -4 a | grep -i up ; ss -lntp4
+tree -L 1 -fh /home/idenis/{mysql,nginx}
+
+docker-compose ps
+docker-compose logs
+docker-compose exec www /bin/bash
+docker-compose stop
+docker-compose up -d web
+docker-compose ps
+docker-compose rm
+
+docker-compose stop ; docker-compose rm -vf
+docker rmi -f $( docker images | awk '{ printf  "%10s\n", $3 }')
+ 
+sudo apt -y install mysql-client-core-8.0 mysql-workbench
+
+mysql -h 127.0.0.1 -u root -p'3151020' -e "\s';"
+mysql -h 127.0.0.1 -u wpuser -p'123qwe' -D wpdb -e "show databases;"
+mysql wpdb -h 127.0.0.1 -u wpuser -p'123qwe' -se "show databases;"
+
+
+

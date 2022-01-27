@@ -1,0 +1,38 @@
+
+vi /home/idenis/Documents/www/html/index.html
+
+<html>
+<body>
+<div style="width: 100%; font-size: 40px; font-weight: bold; text-align: center;">
+Docker !!! Nginx Test Page !!! Container Name is nginx-full
+</div>
+</body>
+</html>
+
+vi Dockerfile
+
+FROM ubuntu:latest
+ENV tmzone=Europe/Zaporozhye 
+RUN ln -snf /usr/share/zoneinfo/$tmzone /etc/localtime && echo $tmzone > /etc/timezone
+RUN apt update && apt -y install errno figlet cowsay nginx-full elinks lynx
+WORKDIR /var/www/html
+RUN figlet NGINX -f big
+EXPOSE 80
+STOPSIGNAL SIGQUIT
+CMD ["nginx", "-g", "daemon off;"]
+
+docker build -t idensiick/nginx-full -f /home/idenis/Documents/Dockerfile  .
+
+docker run -d --name nginx-full -p 80:80 -v /home/idenis/Documents/www/html:/var/www/html idensiick/nginx-full
+docker exec -it nginx-full bash 
+lynx index.html 
+
+docker run --name nginx-full-exec idensiick/nginx-full /bin/echo NGINX
+docker run --name nginx-full-word idensiick/nginx-full figlet NGINX -f big
+docker run --rm --name nginx-full-block idensiick/nginx-full figlet NGINX -f block
+docker run --rm --name nginx-full-banner idensiick/nginx-full figlet NGINX -f banner
+
+docker ps -a ; docker images 
+docker rm -f $(docker ps -a |  awk '{ printf  "%10s\n", $1 }')
+docker rmi -f $( docker images | awk '{ printf  "%10s\n", $3 }')
+

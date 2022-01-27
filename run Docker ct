@@ -1,0 +1,66 @@
+
+
+docker search nginx
+docker pull nginx
+docker images
+mkdir -pv www/{html,html0,html1}
+tree www
+
+vi www/html/index.html
+
+<html>
+<body>
+<div style="width: 100%; font-size: 40px; font-weight: bold; text-align: center;">
+Docker !!! Nginx Test Page !!! Container Name is nginx0
+</div>
+</body>
+</html>
+
+vi www/html0/index.html
+
+<html>
+<body>
+<div style="width: 100%; font-size: 40px; font-weight: bold; text-align: center;">
+Docker !!! Nginx Test Page !!! Container Name is nginx2
+</div>
+</body>
+</html>
+
+vi www/html1/index.html
+
+<html>
+<body>
+<div style="width: 100%; font-size: 40px; font-weight: bold; text-align: center;">
+Docker !!! Nginx Test Page !!! Container Name is nginx3
+</div>
+</body>
+</html>
+
+docker run --name test-nginx -p 8081:80 -d nginx:1.12-alpine
+
+docker run -d --name nginx0 -p 80:80 -v /home/idenis/Documents/www/html:/usr/share/nginx/html nginx
+docker run -d --name nginx2 -p 8080:80 -v /home/idenis/Documents/www/html0:/usr/share/nginx/html nginx
+docker run -d --name nginx4 -p 8084:80 -v /home/idenis/Documents/www/html1:/usr/share/nginx/html nginx
+
+docker ps
+docker ps |  awk '{ printf  "%10s\n", $1 }' 
+docker ps -a | awk '{print $NF}' | grep nginx
+
+docker rm -f $(docker ps  |  awk '{ printf  "%10s\n", $1 }')
+docker rm -f $(docker ps -a |  awk '{ printf  "%10s\n", $1 }')
+
+docker rmi -f $( docker images | awk '{ printf  "%10s\n", $3 }')
+
+ip -br -4 a | grep -i up ; ss -lntp | grep -i 80
+ 
+docker exec -it e4c470864b75 bash
+
+apt update ; apt -y install errno figlet cowsay
+
+apt update ; apt -y install  wget gnupg2 curl lsb-release wget
+wget https://repo.percona.com/apt/percona-release_latest.generic_all.deb
+dpkg -i percona-release_latest.generic_all.deb
+apt update
+percona-release setup ps80
+apt -y install percona-server-client/stable percona-server-common/stable percona-server-server/stable percona-toolkit/stable percona-xtrabackup-80/stable 
+

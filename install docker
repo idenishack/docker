@@ -1,0 +1,149 @@
+
+sudo apt -y install docker.io
+sudo systemctl status docker 
+sudo systemctl is-active docker
+
+sudo apt -y install tldr
+
+sudo usermod idenis -aG docker ; reboot
+
+docker --version
+docker search nginx
+docker pull nginx
+docker images
+mkdir -pv www/{html,html0,html1}
+tree www
+
+vi www/html/index.html
+
+<html>
+<body>
+<div style="width: 100%; font-size: 40px; font-weight: bold; text-align: center;">
+Docker !!! Nginx Test Page !!! Container Name is nginx0
+</div>
+</body>
+</html>
+
+vi www/html0/index.html
+
+<html>
+<body>
+<div style="width: 100%; font-size: 40px; font-weight: bold; text-align: center;">
+Docker !!! Nginx Test Page !!! Container Name is nginx2
+</div>
+</body>
+</html>
+
+vi www/html1/index.html
+
+<html>
+<body>
+<div style="width: 100%; font-size: 40px; font-weight: bold; text-align: center;">
+Docker !!! Nginx Test Page !!! Container Name is nginx3
+</div>
+</body>
+</html>
+
+docker run --name test-nginx -p 8080:80 -d nginx:1.12-alpine
+
+docker run -d --name nginx0 -p 80:80 -v /home/idenis/www/html:/usr/share/nginx/html nginx
+docker run -d --name nginx2 -p 8080:80 -v /home/idenis/www/html0:/usr/share/nginx/html nginx
+docker run -d --name nginx3 -p 8081:80 -v /home/idenis/www/html1:/usr/share/nginx/html nginx
+
+docker ps
+docker ps |  awk '{ printf  "%10s\n", $1 }' 
+docker ps -a | awk '{print $NF}' | grep nginx
+
+docker rm -f $(docker ps  |  awk '{ printf  "%10s\n", $1 }')
+docker rm -f $(docker ps -a |  awk '{ printf  "%10s\n", $1 }')
+
+docker rmi -f $( docker images | awk '{ printf  "%10s\n", $3 }')
+
+ip -br -4 a | grep -i up ; ss -lntp | grep -i 80
+ 
+docker exec -it e4c470864b75 bash
+
+sudo apt -y install errno figlet cowsay
+
+apt update ; apt -y install  wget gnupg2 curl lsb-release wget
+wget https://repo.percona.com/apt/percona-release_latest.generic_all.deb
+dpkg -i percona-release_latest.generic_all.deb
+apt update
+percona-release setup ps80
+apt -y install percona-server-client/stable percona-server-common/stable percona-server-server/stable percona-toolkit/stable percona-xtrabackup-80/stable 
+
+vi Dockerfile
+
+FROM ubuntu:latest
+MAINTAINER idenisick <idenis@mail.ua>
+
+RUN apt update
+RUN apt -y install errno figlet cowsay  nginx && figlet NGINX -f big
+ENTRYPOINT ["figlet"]
+
+docker build -t idenisick/ngixn-figlet:latest ./
+
+
+mkdir -v {mysql,nginx}
+tree -L 1  -f /home/idenis/
+
+vi /home/idenis/nginx/index.html
+
+<html>
+<body>
+<div style="width: 100%; font-size: 40px; font-weight: bold; text-align: center;">
+Docker !!! Percona Server from the MySQL !!! NGINX
+</div>
+</body>
+</html>
+
+vi docker-compose.yml
+
+version: "3.9"
+services:
+  MySQL:
+    image: mysql:latest
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    ports:
+      - "3306:3306"
+    volumes:
+      - /home/idenis/mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 3151020
+      MYSQL_USER: wpuser
+      MYSQL_PASSWORD: 123qwe
+      MYSQL_DATABASE: wpdb
+
+  NGINX:
+    image: nginx:latest
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - /home/idenis/nginx:/usr/share/nginx/html
+      
+docker-compose up -d
+docker ps ; docker images
+ip -br -4 a | grep -i up ; ss -lntp4
+tree -L 1 -fh /home/idenis/{mysql,nginx}
+
+docker-compose ps
+docker-compose logs
+docker-compose exec www /bin/bash
+docker-compose stop
+docker-compose up -d web
+docker-compose ps
+docker-compose rm
+
+docker-compose stop ; docker-compose rm -vf
+docker rmi -f $( docker images | awk '{ printf  "%10s\n", $3 }')
+ 
+sudo apt -y install mysql-client-core-8.0 mysql-workbench
+
+mysql -h 127.0.0.1 -u root -p'3151020' -e "\s';"
+mysql -h 127.0.0.1 -u wpuser -p'123qwe' -D wpdb -e "show databases;"
+mysql wpdb -h 127.0.0.1 -u wpuser -p'123qwe' -se "show databases;"
+
+
+
